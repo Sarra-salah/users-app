@@ -1,3 +1,4 @@
+
 <?php
 
 header('Content-type: application/json');
@@ -11,17 +12,13 @@ require_once 'config.php';
 
 class AddUser
 {
-    private $conn;
-
-    public function __construct()
-    {
-        $this->conn =  pdo_connect_mysql();
-    }
+    
     public function insert($fname, $lname, $email, $phone)
     {
+        $con=new config();
         $sql = 'INSERT INTO users(first_name, last_name, email, phone) 
                 VALUES (:fname, :lname, :email, :phone)';
-        $stmt = $this->conn->prepare($sql);
+        $stmt = $con->connexion()->prepare($sql);
         $stmt->execute([
             ':fname' => $fname,
             ':lname' => $lname,
@@ -31,7 +28,7 @@ class AddUser
         return true;
     }
 }
-
+/*
 $db = new AddUser();
 
 // Handle Add New User Ajax request
@@ -50,3 +47,4 @@ if ($db->insert($fname, $lname, $email, $phone)) {
         'success' => false,
         'code' => 500,
     ]);   }
+*/

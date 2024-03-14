@@ -1,16 +1,41 @@
 <?php
 
-function pdo_connect_mysql() {
-    $DATABASE_HOST = 'localhost';
-    $DATABASE_USER = 'root';
-    $DATABASE_PASS = '';
-    $DATABASE_NAME = 'fetch_crud_app';
-    try {
-    	return new PDO('mysql:host=' . $DATABASE_HOST . ';dbname=' . $DATABASE_NAME . ';charset=utf8', $DATABASE_USER, $DATABASE_PASS);
-    } catch (PDOException $exception) {
-    	// If there is an error with the connection, stop the script and display the error.
-    	exit('Failed to connect to database!');
+class Config {
+private const DBHOST = 'localhost';
+private const DBUSER = 'root';
+private const DBPASS ='';
+private const DBNAME ='fetch_crud_app';
+
+private $dsn ='mysql:host=' . self::DBHOST . ';dbname=' . self::DBNAME . '';
+
+protected $conn = null ;
+
+// connecting to dataBase
+
+public function connexion()
+
+{
+    try{
+        $this->conn = new PDO($this->dsn, self::DBUSER , self::DBPASS);
+        $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        return $this->conn;
+       
+    }catch(PDOException $e){
+      die('ERRor:'. $e->getMessage());
     }
 }
 
+public function close() {
+    $this->conn = null;
+    
+}
+
+}
+
+
+
+
+
 ?>
+
+
