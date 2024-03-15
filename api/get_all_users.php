@@ -9,46 +9,46 @@ header('Access-Control-Allow-Headers: Content-Type, Accept');
 
 require_once 'config.php';
 
-class getAllUsers {
-    private $conn;
-
-    public function __construct() {
-        $this->conn =  pdo_connect_mysql();
-
-
-    }
-
+class User {
+  
     // Fetch all data from the database
-    public function read() {
-
+   /* public function getAll() {
+        $con = new Config();
         $sql = 'SELECT * FROM users ORDER BY id DESC';
-        $stmt = $this->conn->prepare($sql);
+        $stmt = $con->connexion()->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
-        return $result;
-    }
+       return $result;
+    }*/     function getAll($page, $limit) {
+    $con = new Config();
+    
+    // Calculate the offset
+    $offset = ($page > 1) ? ($page - 1) * $limit : 0;
+    
+    // Query to get total count
+    $sqlTotal = "SELECT COUNT(*) as total FROM users";
+    $stmtTotal = $con->connexion()->query($sqlTotal);
+    $total = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
+
+    // Query to get users for the specified page and limit
+    $sql = "SELECT * FROM users ORDER BY id ASC LIMIT :limit OFFSET :offset";
+    $stmt = $con->connexion()->prepare($sql);
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll();
+
+    return ['total' => $total, 'data' => $result];
 }
 
-// Initialize the database object
-$db = new getAllUsers();
+    public function delete($id){
+        $con= new config();
+        $sql="DELETE From users where id = :id";
+        $stmt = $con->connexion()->prepare($sql);
+        $stmt->execute(['id'=>$id]);
+        return true;
+    }
 
-// Handle fetch all users Ajax request
+}
 
-    $users = $db->read();
 
-    if($users) {
-        // Return data in JSON format
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'code' => 200,
-            'data' => $users,
-        ]);
-    } else {
-        // Return empty array if no users found
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'code' => 200,
-            'data' => [],
-        ]);    }
